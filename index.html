@@ -1,1 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>StarWork Mini App</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  body { margin:0; font-family: Arial,sans-serif; background:#0f172a; color:white; }
+  header { background:#111827; padding:15px; text-align:center; font-size:22px; font-weight:bold; }
+  nav { display:flex; justify-content:space-around; background:#1f2937; }
+  nav button { flex:1; padding:12px 0; background:#2563eb; color:white; border:none; cursor:pointer; font-size:16px; }
+  nav button.active { background:#3b82f6; }
+  .tab { display:none; padding:15px; max-width:480px; margin:0 auto; box-sizing:border-box; }
+  .task, .history-item { background:#1e293b; padding:12px; border-radius:8px; margin:10px 0; }
+  .task button, .modal button { width:100%; padding:10px; border:none; border-radius:6px; background:#22c55e; color:white; font-size:16px; cursor:pointer; margin-top:6px; }
+  input, textarea, select { width:100%; padding:8px; margin:6px 0; border-radius:4px; border:none; }
+  #modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); justify-content:center; align-items:center; z-index:10; }
+  #modal-content { background:#1e293b; padding:20px; border-radius:8px; width:90%; max-width:400px; }
+  .close { background:#ef4444; margin-top:10px; }
+</style>
+</head>
+<body>
 
+<header>StarWork Mini App 🚀</header>
+
+<nav>
+  <button class="tab-btn active" onclick="showTab('tasks')">Задания</button>
+  <button class="tab-btn" onclick="showTab('history')">История</button>
+  <button class="tab-btn" onclick="showTab('wallet')">Кошелек</button>
+  <button class="tab-btn" onclick="showTab('profile')">Профиль</button>
+</nav>
+
+<div id="tasks" class="tab"></div>
+<div id="history" class="tab"></div>
+<div id="wallet" class="tab"></div>
+<div id="profile" class="tab"></div>
+
+<!-- Модальное окно -->
+<div id="modal">
+  <div id="modal-content"></div>
+</div>
+
+<script>
+const tg = window.Telegram.WebApp;
+tg.ready();
+
+const ADMIN_ID = 6320615361;
+let user = tg.initDataUnsafe.user || {id:0, first_name:"Гость"};
+
+let balance = { ton: 1.0, stars: 50 };
+let tasks = [
+  {id:1, title:"Одноразовое задание", description:"Описание 1", report_req:"Скриншот", reward_type:"TON", reward_amount:0.5, type:"ONE", interval_hours:0, active:true},
+  {id:2, title:"Многоразовое задание", description:"Описание 2", report_req:"Ссылка", reward_type:"STARS", reward_amount:20, type:"MULTI", interval_hours:24, active:true}
+];
+let history = [];
+
+// вкладки
+function showTab(tab){
+  document.querySelectorAll('.tab').forEach(t=>t.style.display='none');
+  document.getElementById(tab).style.display='block';
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`nav button[onclick="showTab('${tab}')"]`).classList.add('active');
+  if(tab==='tasks') renderTasks();
+  if(tab==='history') renderHistory();
+  if(tab==='wallet') renderWallet();
+  if(tab==='profile') renderProfile();
+}
+
+// рендер задач
+function renderTasks(){
+  let container = document.getElementById('tasks');
+  container.innerHTML = '';
+  
+  if(user.id===ADMIN_ID){
+    let form = document.createElement('div');
+    form.innerHTML=`
+      <h3>Создать задание (Админ)</h3>
+      <input id="task_title" placeholder="Название"/>
+      <textarea id="task_desc" placeholder="Описание задания"></textarea>
+      <input id="task_report" placeholder="Что указать в отчете"/>
+      <select id="task_reward_type"><option>TON</option><option>STARS</option></select>
+      <input id="task_reward_amount" placeholder="Количество"/>
+      <select id="task_type"><option value="ONE">Одноразовое</option><option value="MULTI">Многоразовое</option></select>
+      <input id="task_interval" placeholder="Интервал часов (для многоразовых)"/>
+      <button onclick="createTask()">Создать</button>
+    `;
+    container.appendChild(form);
+  }
+
+  tasks.filter(t=>t.active).forEach(t=>{
+    let div = document.createElement('div');
+    div.className='task';
+    let adminButtons = '';
+    if(user.id===ADMIN_ID){
+      adminButtons = `
+        <button onclick="approveTask(${t.id})">Принять</button>
+        <button onclick="revisionTask(${t.id})">На доработку</button>
+        <button onclick="rejectTask(${t.id})">Отклонить</button>
+      `;
+    }
+    div.innerHTML=`
+      <b>${t.title}</b> [${t.type==='ONE'?'Одноразовое':'Многоразовое'}]<br>
+      ${t.description}<br>
+      Награда: ${t.reward_amount} ${t.reward_type}<br>
+      <button onclick="submitTask(${t.id})">Выполнить</button>
+      ${adminButtons}
+    `;
+    container.appendChild(div);
+  });
+}
+
+// создать задание
+function createTask(){
+  let title = document.getElementById('task_title').value;
+  let desc = document.getElementById('task_desc').value;
+  let report = document.getElementById('task_report').value;
+  let reward_type = document.getElementById('task_reward_type').value;
+  let reward_amount = parseFloat(document.getElementById('task_reward_amount').value);
+  let type = document.getElementById('task_type').value;
+  let interval = parseInt(document.getElementById('task_interval').value) || 0;
+  let id = tasks.length+1;
+  tasks.push({id,title,description:desc,report_req:report,reward_type,reward_amount,type,interval_hours:interval,active:true});
+  alert('Задание создано!');
+  renderTasks();
+}
+
+// модалка
+function showModal(html){ 
+  document.getElementById('modal-content').innerHTML = html + '<button class="close" onclick="closeModal()">Закрыть</button>';
+  document.getElementById('modal').style.display='flex';
+}
+function closeModal(){ document.getElementById('modal').style.display='none'; }
+
+// выполнить задание
+function submitTask(id){
+  let t = tasks.find(x=>x.id===id);
+  if(!t) return;
+  showModal(`
+    <h3>${t.title}</h3>
+    <p>${t.report_req}</p>
+    <textarea id="report_text" placeholder="Введите отчет"></textarea>
+    <button onclick="confirmTask(${id})">Отправить на проверку</button>
+  `);
+}
+function confirmTask(id){
+  let t = tasks.find(x=>x.id===id);
+  let report = document.getElementById('report_text').value;
+  if(!report) { alert('Введите отчет'); return; }
+  history.push({ task:t.title, status:'На проверке', reward:t.reward_amount, reward_type:t.reward_type });
+  if(t.type==='ONE') t.active=false;
+  closeModal();
+  renderTasks();
+}
+
+// админские действия
+function approveTask(id){ updateHistory(id,'Принято'); }
+function revisionTask(id){ updateHistory(id,'На доработку'); }
+function rejectTask(id){ updateHistory(id,'Отклонено'); }
+
+function updateHistory(id,status){
+  let h = history.find(x=>x.task===tasks.find(t=>t.id===id).title);
+  if(h) h.status=status;
+  renderTasks();
+  renderHistory();
+}
+
+// история
+function renderHistory(){
+  let container = document.getElementById('history');
+  container.innerHTML='';
+  history.forEach(h=>{
+    let div = document.createElement('div');
+    div.className='history-item';
+    div.innerHTML=`<b>${h.task}</b> — ${h.status} — ${h.reward} ${h.reward_type}`;
+    container.appendChild(div);
+  });
+}
+
+// кошелек
+function renderWallet(){
+  let container = document.getElementById('wallet');
+  container.innerHTML=`
+    <h3>Баланс</h3>
+    TON: ${balance.ton}<br>
+    Stars: ${balance.stars}<br><br>
+    <button onclick="withdraw('TON')">Вывести TON</button>
+    <button onclick="withdraw('STARS')">Вывести Stars</button>
+  `;
+}
+function withdraw(type){
+  let min = type==='TON'?0.25:15;
+  showModal(`
+    <h3>Вывод ${type}</h3>
+    <input id="withdraw_amount" placeholder="Сумма, мин ${min}"/>
+    <input id="withdraw_wallet" placeholder="Кошелек / ник"/>
+    <button onclick="confirmWithdraw('${type}', ${min})">Отправить заявку</button>
+  `);
+}
+function confirmWithdraw(type,min){
+  let amount = parseFloat(document.getElementById('withdraw_amount').value);
+  let wallet = document.getElementById('withdraw_wallet').value;
+  if(isNaN(amount) || amount<min || !wallet){ alert('Неверные данные'); return; }
+  alert(`${type} ${amount} отправлено на вывод на ${wallet}`);
+  closeModal();
+}
+
+// профиль
+function renderProfile(){
+  let container = document.getElementById('profile');
+  container.innerHTML=`
+    Telegram: ${user.first_name} <br>ID: ${user.id} <br><br>
+    <h4>Условия пользования:</h4>
+    Админ имеет право отклонять задания, изменять награды и блокировать пользователей при нарушении правил.<br><br>
+    ${user.id===ADMIN_ID?'Вы админ':'Вы пользователь'}
+  `;
+}
+
+// показать первую вкладку
+showTab('tasks');
+</script>
+
+</body>
+</html>
