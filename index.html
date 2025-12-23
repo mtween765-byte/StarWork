@@ -1,1 +1,1088 @@
 
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeroTask Bot - Web3 Task Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --dark: #212529;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+        
+        .container {
+            max-width: 100%;
+            padding: 10px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .balance-cards {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .balance-card {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 140px;
+        }
+        
+        .balance-card h3 {
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .balance-card .amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .stars-amount {
+            color: #FFD700;
+        }
+        
+        .ton-amount {
+            color: #0098EA;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            background: white;
+            border-radius: 10px;
+            padding: 5px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        
+        .nav-tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px 8px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            min-width: 90px;
+            font-size: 0.9rem;
+        }
+        
+        .nav-tab.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .content-section {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tasks-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .task-card {
+            border: 1px solid #eaeaea;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        
+        .task-title {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .task-reward {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.9rem;
+        }
+        
+        .task-description {
+            color: var(--gray);
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .task-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 10px;
+            flex-direction: column;
+        }
+        
+        .admin-panel {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .settings-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .settings-table th, .settings-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+        
+        .settings-table th {
+            background-color: #f1f3f5;
+            font-weight: 600;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-completed {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .wallet-connect {
+            background: linear-gradient(135deg, #0098EA, #0066CC);
+            color: white;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .withdraw-form {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .min-withdraw-info {
+            background-color: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--warning);
+            font-size: 0.9rem;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+        
+        .modal-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+        
+        .admin-badge {
+            background-color: var(--danger);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            margin-left: 6px;
+        }
+        
+        .task-status {
+            font-size: 0.8rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            margin-top: 5px;
+            display: inline-block;
+        }
+        
+        @media (min-width: 768px) {
+            .container {
+                max-width: 768px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            
+            .form-row {
+                flex-direction: row;
+            }
+            
+            .tasks-container {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-top">
+                <div class="logo">
+                    <i class="fas fa-tasks"></i>
+                    HeroTask Bot
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar">Q</div>
+                    <div>
+                        <div style="font-weight: bold;">qwzrrq</div>
+                        <div style="font-size: 0.8rem; opacity: 0.9;">Админ <span class="admin-badge">6320615361</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <h2 style="margin-bottom: 8px; font-size: 1.4rem;">Готов зарабатывать награды?</h2>
+            <p style="opacity: 0.9; margin-bottom: 15px; font-size: 0.9rem;">Выполняйте задания и получайте звёзды и TON</p>
+            
+            <div class="balance-cards">
+                <div class="balance-card">
+                    <h3><i class="fas fa-star"></i> Баланс звёзд</h3>
+                    <div class="amount stars-amount">15 <i class="fas fa-star"></i></div>
+                </div>
+                <div class="balance-card">
+                    <h3><i class="fab fa-bitcoin"></i> Баланс TON</h3>
+                    <div class="amount ton-amount">0.50 <i class="fas fa-coins"></i></div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="nav-tabs">
+            <div class="nav-tab active" data-tab="tasks">
+                <i class="fas fa-tasks"></i> Задачи
+            </div>
+            <div class="nav-tab" data-tab="create">
+                <i class="fas fa-plus-circle"></i> Создать
+            </div>
+            <div class="nav-tab" data-tab="wallet">
+                <i class="fas fa-wallet"></i> Кошелёк
+            </div>
+            <div class="nav-tab" data-tab="profile">
+                <i class="fas fa-user"></i> Профиль
+            </div>
+        </div>
+        
+        <!-- Задачи -->
+        <div class="content-section active" id="tasks">
+            <div class="section-title">
+                <i class="fas fa-tasks"></i> Популярные задачи
+            </div>
+            
+            <div class="tasks-container">
+                <!-- Задачи будут загружены через JS -->
+            </div>
+        </div>
+        
+        <!-- Создание задачи -->
+        <div class="content-section" id="create">
+            <div class="section-title">
+                <i class="fas fa-plus-circle"></i> Создать задачу
+            </div>
+            
+            <div class="admin-panel">
+                <h3 style="color: var(--danger); margin-bottom: 10px;"><i class="fas fa-user-shield"></i> Режим администратора</h3>
+                <p style="font-size: 0.9rem;">ID: 6320615361</p>
+            </div>
+            
+            <form id="createTaskForm">
+                <div class="form-group">
+                    <label class="form-label" for="taskTitle">Название задачи</label>
+                    <input type="text" class="form-control" id="taskTitle" placeholder="например: Присоединитесь к Telegram каналу" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="taskDescription">Описание задачи</label>
+                    <textarea class="form-control form-textarea" id="taskDescription" placeholder="Опишите, что нужно сделать пользователю..." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="taskLink">Ссылка для выполнения</label>
+                    <input type="url" class="form-control" id="taskLink" placeholder="https://t.me/..." required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label class="form-label" for="rewardType">Тип награды</label>
+                        <select class="form-control" id="rewardType" required>
+                            <option value="stars">Звёзды (★)</option>
+                            <option value="ton">TON</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" style="flex: 1;">
+                        <label class="form-label" for="rewardAmount">Сумма награды</label>
+                        <input type="number" class="form-control" id="rewardAmount" min="0.1" step="0.1" value="10" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">
+                    <i class="fas fa-paper-plane"></i> Опубликовать задачу
+                </button>
+            </form>
+        </div>
+        
+        <!-- Кошелёк -->
+        <div class="content-section" id="wallet">
+            <div class="section-title">
+                <i class="fas fa-wallet"></i> Мой кошелёк
+            </div>
+            
+            <div class="wallet-connect">
+                <h3 style="margin-bottom: 10px;">Подключите кошелек TON</h3>
+                <p style="margin-bottom: 15px; opacity: 0.9;">Подключите ваш кошелек TON для управления средствами</p>
+                <button class="btn btn-success" onclick="connectWallet()">
+                    <i class="fas fa-plug"></i> Подключить кошелек
+                </button>
+            </div>
+            
+            <div class="withdraw-form">
+                <div class="section-title">
+                    <i class="fas fa-money-bill-wave"></i> Вывод средств
+                </div>
+                
+                <div class="min-withdraw-info">
+                    <h4 style="margin-bottom: 5px;"><i class="fas fa-info-circle"></i> Минимальный вывод:</h4>
+                    <p>• TON: <strong id="min-ton-display">0.25 TON</strong></p>
+                    <p>• Звёзды: <strong id="min-stars-display">15 ★</strong></p>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label class="form-label" for="withdrawType">Тип вывода</label>
+                        <select class="form-control" id="withdrawType">
+                            <option value="ton">TON</option>
+                            <option value="stars">Звёзды</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" style="flex: 1;">
+                        <label class="form-label" for="withdrawAmount">Сумма</label>
+                        <input type="number" class="form-control" id="withdrawAmount" min="0.25" step="0.01" value="0.25">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="walletAddress">Адрес кошелька</label>
+                    <input type="text" class="form-control" id="walletAddress" placeholder="Введите адрес вашего кошелька TON">
+                </div>
+                
+                <button class="btn btn-primary" onclick="withdrawFunds()" style="width: 100%; padding: 12px;">
+                    <i class="fas fa-paper-plane"></i> Запросить вывод
+                </button>
+            </div>
+            
+            <div style="margin-top: 25px;">
+                <div class="section-title">
+                    <i class="fas fa-history"></i> История операций
+                </div>
+                
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Операция</th>
+                            <th>Сумма</th>
+                            <th>Дата</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <!-- История будет загружена через JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Профиль -->
+        <div class="content-section" id="profile">
+            <div class="section-title">
+                <i class="fas fa-user"></i> Профиль
+            </div>
+            
+            <div style="background-color: #f8f9fa; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                <h3 style="margin-bottom: 10px;">qwzrrq</h3>
+                <p style="margin-bottom: 5px;"><strong>ID:</strong> @qwzrrq@local</p>
+                <p style="margin-bottom: 5px;"><strong>Email:</strong> qwzrrq@local</p>
+                <p style="margin-bottom: 5px;"><strong>Роль:</strong> Администратор</p>
+                <p style="margin-bottom: 5px;"><strong>ID администратора:</strong> 6320615361</p>
+                <p><strong>Дата регистрации:</strong> 15.12.2025</p>
+            </div>
+            
+            <div class="section-title">
+                <i class="fas fa-cog"></i> Настройки администратора
+            </div>
+            
+            <div class="withdraw-form">
+                <h3 style="margin-bottom: 15px;">Настройки минимального вывода</h3>
+                
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label class="form-label" for="minTonWithdraw">Минимальный вывод TON</label>
+                        <input type="number" class="form-control" id="minTonWithdraw" min="0.01" step="0.01" value="0.25">
+                    </div>
+                    
+                    <div class="form-group" style="flex: 1;">
+                        <label class="form-label" for="minStarsWithdraw">Минимальный вывод звёзд</label>
+                        <input type="number" class="form-control" id="minStarsWithdraw" min="1" step="1" value="15">
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" onclick="updateWithdrawLimits()" style="width: 100%; padding: 12px;">
+                    <i class="fas fa-save"></i> Сохранить настройки
+                </button>
+            </div>
+            
+            <div style="margin-top: 25px;">
+                <div class="section-title">
+                    <i class="fas fa-tasks"></i> Управление задачами
+                </div>
+                
+                <div id="adminTasksContainer">
+                    <!-- Задачи для админа будут загружены через JS -->
+                </div>
+            </div>
+            
+            <button class="btn btn-danger" style="margin-top: 20px; width: 100%; padding: 12px;" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Выйти
+            </button>
+        </div>
+    </div>
+    
+    <!-- Модальное окно редактирования задачи -->
+    <div class="modal" id="editTaskModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('editTaskModal')">&times;</button>
+            <div class="modal-title">Редактирование задачи</div>
+            <form id="editTaskForm">
+                <div class="form-group">
+                    <label class="form-label" for="editTaskTitle">Название задачи</label>
+                    <input type="text" class="form-control" id="editTaskTitle" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="editTaskDescription">Описание задачи</label>
+                    <textarea class="form-control form-textarea" id="editTaskDescription" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="editTaskLink">Ссылка для выполнения</label>
+                    <input type="url" class="form-control" id="editTaskLink" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label class="form-label" for="editRewardType">Тип награды</label>
+                        <select class="form-control" id="editRewardType" required>
+                            <option value="stars">Звёзды (★)</option>
+                            <option value="ton">TON</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" style="flex: 1;">
+                        <label class="form-label" for="editRewardAmount">Сумма награды</label>
+                        <input type="number" class="form-control" id="editRewardAmount" min="0.1" step="0.1" required>
+                    </div>
+                </div>
+                
+                <input type="hidden" id="editTaskId">
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">
+                    <i class="fas fa-save"></i> Сохранить изменения
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Глобальные переменные
+        let tasks = [
+            { 
+                id: 1, 
+                title: "Зайти в бота и выполнить задание", 
+                description: "Перейдите по ссылке в бота, подпишитесь на канал и выполните задание.", 
+                reward: 2.00, 
+                rewardType: "stars", 
+                link: "https://t.me/herotask_bot",
+                status: "active",
+                completed: false
+            },
+            { 
+                id: 2, 
+                title: "Присоединиться к Telegram каналу", 
+                description: "Присоединитесь к официальному Telegram каналу HeroTask.", 
+                reward: 5.00, 
+                rewardType: "stars", 
+                link: "https://t.me/herotask_channel",
+                status: "active",
+                completed: true
+            },
+            { 
+                id: 3, 
+                title: "Подписаться на Telegram бота", 
+                description: "Подпишитесь на нашего бота для получения уведомлений о новых заданиях.", 
+                reward: 0.10, 
+                rewardType: "stars", 
+                link: "https://t.me/herotask_notify_bot",
+                status: "active",
+                completed: false
+            }
+        ];
+        
+        let history = [
+            { id: 1, operation: "Присоединиться к Telegram", amount: "+5.00 ★", date: "22.12.2025", status: "completed" }
+        ];
+        
+        let minTONWithdraw = 0.25;
+        let minStarsWithdraw = 15;
+        
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            // Навигация по табам
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    document.querySelectorAll('.content-section').forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    
+                    document.getElementById(tabId).classList.add('active');
+                    
+                    // При переключении на профиль загружаем задачи админа
+                    if (tabId === 'profile') {
+                        loadAdminTasks();
+                    }
+                });
+            });
+            
+            // Обработка формы создания задачи
+            document.getElementById('createTaskForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                createNewTask();
+            });
+            
+            // Обработка формы редактирования задачи
+            document.getElementById('editTaskForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveTaskChanges();
+            });
+            
+            // Обновление минимальных лимитов
+            updateMinWithdrawDisplay();
+            
+            // Загрузка начальных данных
+            loadTasks();
+            loadHistory();
+        });
+        
+        // Загрузка задач
+        function loadTasks() {
+            const container = document.querySelector('#tasks .tasks-container');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            tasks.forEach(task => {
+                const taskCard = document.createElement('div');
+                taskCard.className = 'task-card';
+                taskCard.innerHTML = `
+                    <div class="task-header">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-reward">${task.reward.toFixed(2)} <i class="fas fa-star"></i></div>
+                    </div>
+                    <div class="task-description">${task.description}</div>
+                    <div class="task-actions">
+                        ${task.completed 
+                            ? `<button class="btn btn-success" disabled>
+                                    <i class="fas fa-check"></i> Выполнено
+                                </button>`
+                            : `<button class="btn btn-primary" onclick="startTask(${task.id})">
+                                    <i class="fas fa-play"></i> Начать
+                                </button>`
+                        }
+                        <button class="btn btn-outline" onclick="viewTaskDetails(${task.id})">
+                            <i class="fas fa-info-circle"></i> Подробнее
+                        </button>
+                    </div>
+                `;
+                container.appendChild(taskCard);
+            });
+        }
+        
+        // Загрузка истории
+        function loadHistory() {
+            const container = document.getElementById('historyTableBody');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            history.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.operation}</td>
+                    <td>${item.amount}</td>
+                    <td>${item.date}</td>
+                    <td><span class="status-badge status-completed">${item.status === 'completed' ? 'COMPLETED' : 'PENDING'}</span></td>
+                `;
+                container.appendChild(row);
+            });
+        }
+        
+        // Загрузка задач для админ-панели
+        function loadAdminTasks() {
+            const container = document.getElementById('adminTasksContainer');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (tasks.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--gray); padding: 20px;">Нет созданных задач</p>';
+                return;
+            }
+            
+            tasks.forEach(task => {
+                const taskCard = document.createElement('div');
+                taskCard.className = 'task-card';
+                taskCard.style.marginBottom = '15px';
+                taskCard.innerHTML = `
+                    <div class="task-header">
+                        <div>
+                            <div class="task-title">${task.title}</div>
+                            <div class="task-status" style="background: ${task.status === 'active' ? '#d1ecf1' : '#fff3cd'}; color: ${task.status === 'active' ? '#0c5460' : '#856404'}">
+                                ${task.status === 'active' ? 'Активна' : 'Неактивна'}
+                            </div>
+                        </div>
+                        <div class="task-reward">${task.reward.toFixed(2)} <i class="fas fa-star"></i></div>
+                    </div>
+                    <div class="task-description" style="font-size: 0.85rem;">${task.description}</div>
+                    <div class="task-actions">
+                        <button class="btn btn-warning" onclick="editTask(${task.id})">
+                            <i class="fas fa-edit"></i> Редактировать
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteTask(${task.id})">
+                            <i class="fas fa-trash"></i> Удалить
+                        </button>
+                    </div>
+                `;
+                container.appendChild(taskCard);
+            });
+        }
+        
+        // Функции для задач
+        function startTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                alert(`Задача "${task.title}" начата.\nПерейдите по ссылке: ${task.link}`);
+                // В реальном приложении здесь будет открытие ссылки
+            }
+        }
+        
+        function viewTaskDetails(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) return;
+            
+            alert(`Детали задачи:\n\nНазвание: ${task.title}\nОписание: ${task.description}\nНаграда: ${task.reward} ${task.rewardType === 'stars' ? '★' : 'TON'}\nСсылка: ${task.link}`);
+        }
+        
+        function createNewTask() {
+            const title = document.getElementById('taskTitle').value.trim();
+            const description = document.getElementById('taskDescription').value.trim();
+            const link = document.getElementById('taskLink').value.trim();
+            const rewardType = document.getElementById('rewardType').value;
+            const rewardAmount = parseFloat(document.getElementById('rewardAmount').value);
+            
+            if (!title || !description || !link) {
+                alert("Заполните все поля!");
+                return;
+            }
+            
+            const newTask = {
+                id: tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1,
+                title,
+                description,
+                reward: rewardAmount,
+                rewardType,
+                link,
+                status: "active",
+                completed: false
+            };
+            
+            tasks.push(newTask);
+            
+            // Очистка формы
+            document.getElementById('createTaskForm').reset();
+            document.getElementById('rewardAmount').value = 10;
+            
+            // Обновление интерфейса
+            loadTasks();
+            loadAdminTasks();
+            
+            alert(`Задача "${title}" успешно создана!`);
+        }
+        
+        function editTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) return;
+            
+            document.getElementById('editTaskId').value = task.id;
+            document.getElementById('editTaskTitle').value = task.title;
+            document.getElementById('editTaskDescription').value = task.description;
+            document.getElementById('editTaskLink').value = task.link;
+            document.getElementById('editRewardType').value = task.rewardType;
+            document.getElementById('editRewardAmount').value = task.reward;
+            
+            openModal('editTaskModal');
+        }
+        
+        function saveTaskChanges() {
+            const taskId = parseInt(document.getElementById('editTaskId').value);
+            const task = tasks.find(t => t.id === taskId);
+            
+            if (!task) return;
+            
+            task.title = document.getElementById('editTaskTitle').value.trim();
+            task.description = document.getElementById('editTaskDescription').value.trim();
+            task.link = document.getElementById('editTaskLink').value.trim();
+            task.rewardType = document.getElementById('editRewardType').value;
+            task.reward = parseFloat(document.getElementById('editRewardAmount').value);
+            
+            // Обновление интерфейса
+            loadTasks();
+            loadAdminTasks();
+            
+            closeModal('editTaskModal');
+            alert(`Задача "${task.title}" успешно обновлена!`);
+        }
+        
+        function deleteTask(taskId) {
+            if (!confirm("Вы уверены, что хотите удалить эту задачу?")) {
+                return;
+            }
+            
+            tasks = tasks.filter(t => t.id !== taskId);
+            
+            // Обновление интерфейса
+            loadTasks();
+            loadAdminTasks();
+            
+            alert("Задача удалена!");
+        }
+        
+        // Функции для кошелька
+        function connectWallet() {
+            alert("Кошелек TON подключен!");
+            // В реальном приложении здесь будет интеграция с TON Connect
+        }
+        
+        function withdrawFunds() {
+            const type = document.getElementById('withdrawType').value;
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+            const address = document.getElementById('walletAddress').value.trim();
+            
+            if (!address) {
+                alert("Введите адрес кошелька!");
+                return;
+            }
+            
+            if (type === 'ton' && amount < minTONWithdraw) {
+                alert(`Минимальная сумма вывода TON: ${minTONWithdraw} TON`);
+                return;
+            }
+            
+            if (type === 'stars' && amount < minStarsWithdraw) {
+                alert(`Минимальная сумма вывода звёзд: ${minStarsWithdraw} ★`);
+                return;
+            }
+            
+            // Добавляем в историю
+            const newHistoryItem = {
+                id: history.length + 1,
+                operation: `Вывод ${type === 'ton' ? 'TON' : 'Звёзд'}`,
+                amount: `-${amount.toFixed(2)} ${type === 'ton' ? 'TON' : '★'}`,
+                date: new Date().toLocaleDateString('ru-RU'),
+                status: 'pending'
+            };
+            
+            history.push(newHistoryItem);
+            
+            // Очистка формы
+            document.getElementById('withdrawAmount').value = type === 'ton' ? minTONWithdraw : minStarsWithdraw;
+            document.getElementById('walletAddress').value = '';
+            
+            // Обновление истории
+            loadHistory();
+            
+            alert(`Запрос на вывод ${amount} ${type === 'ton' ? 'TON' : '★'} отправлен!`);
+        }
+        
+        // Обновление минимальных лимитов
+        function updateWithdrawLimits() {
+            const newMinTON = parseFloat(document.getElementById('minTonWithdraw').value);
+            const newMinStars = parseInt(document.getElementById('minStarsWithdraw').value);
+            
+            if (newMinTON < 0.01 || newMinStars < 1) {
+                alert("Некорректные значения!");
+                return;
+            }
+            
+            minTONWithdraw = newMinTON;
+            minStarsWithdraw = newMinStars;
+            
+            updateMinWithdrawDisplay();
+            
+            alert(`Лимиты обновлены:\nTON: ${minTONWithdraw}\nЗвёзды: ${minStarsWithdraw}`);
+        }
+        
+        function updateMinWithdrawDisplay() {
+            document.getElementById('min-ton-display').textContent = `${minTONWithdraw} TON`;
+            document.getElementById('min-stars-display').textContent = `${minStarsWithdraw} ★`;
+        }
+        
+        // Модальные окна
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+        
+        function logout() {
+            if (confirm("Вы уверены, что хотите выйти?")) {
+                alert("Вы вышли из системы");
+                // В реальном приложении здесь будет редирект
+            }
+        }
+    </script>
+</body>
+  </html>
